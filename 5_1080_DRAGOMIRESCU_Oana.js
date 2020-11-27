@@ -1,11 +1,20 @@
-const FPS=35; //frames per second
-const vitezaIntoarcere=260;//in grade pe secunda
 var canvas=document.getElementById("jocAsteroizi");
 var ctx=canvas.getContext("2d");
-const fortaFrecare=0.8; //coeficientul de frecare al spatiului 0=nu avem forta de frecare
+
+
+
+// ----------------------------------------------------
+// ----------------------------------------------------
+// NAVA
+// ----------------------------------------------------
+// ----------------------------------------------------
 
 const dimensiuneNava=25;
-const acceleratieNava=5; //pixeli pe secunde
+const acceleratieNava=2; //pixeli pe secunde
+const FPS=30; //frames per second
+const vitezaIntoarcere=260;//in grade pe secunda
+const fortaFrecare=0.9; //coeficientul de frecare al spatiului 0=nu avem forta de frecare
+
 
 var nava={
     x:canvas.width/2,
@@ -26,19 +35,23 @@ var nava={
 //event handlers ca sa rotesc nava
 document.addEventListener("keydown",keyDown);
 document.addEventListener("keyup",keyUp);
-function keyDown(/** @type {keyboardEvent}*/ eveniment){
+function keyDown(eveniment){
     switch(eveniment.keyCode){
             //pentru rotit la stanga folosind z si Z
         case 122: 
         nava.rotire=vitezaIntoarcere/180*Math.PI/FPS;
         case 90: 
         nava.rotire=vitezaIntoarcere/180*Math.PI/FPS;
-
             break;
+            //sagetica stanga
+        case 37: 
+            nava.rotire=vitezaIntoarcere/180*Math.PI/FPS;
+                break;
             //sus -> merge drept
         case 38: 
             nava.inainteaza=true;
             break;
+
             //dreapta c/C
         case 99: 
         nava.rotire=-vitezaIntoarcere/180*Math.PI/FPS;
@@ -46,9 +59,13 @@ function keyDown(/** @type {keyboardEvent}*/ eveniment){
         case 67: 
         nava.rotire=-vitezaIntoarcere/180*Math.PI/FPS;
             break;
+            //sageata dreapta
+        case 39: 
+        nava.rotire=-vitezaIntoarcere/180*Math.PI/FPS;
+            break;
     }
 }
-function keyUp(/** @type {keyboardEvent}*/ eveniment){
+function keyUp(eveniment){
     switch(eveniment.keyCode){
         //stop rotit la stanga
     case 122: 
@@ -56,7 +73,11 @@ function keyUp(/** @type {keyboardEvent}*/ eveniment){
             break;
     case 90: 
         nava.rotire=0;
-             break;
+            break;
+    case 38: 
+         nava.rotire=0;
+            break;
+
         //stop  mers drept
     case 38: 
             nava.inainteaza=false;
@@ -68,6 +89,9 @@ function keyUp(/** @type {keyboardEvent}*/ eveniment){
     case 67: 
         nava.rotire=0;
             break;
+    case 39: 
+        nava.rotire=0;
+             break;
 }
 
 }
@@ -77,17 +101,20 @@ setInterval(update,1000/FPS);
 function update(){
     //desenez fundalul(spatiul)
     ctx.fillStyle = "#071425";
-    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillRect(0,0,canvas.width,canvas.height); //700,700
 
     //desenez nava in forma de triunghi
     ctx.strokeStyle="yellow";
     ctx.lineWidth=dimensiuneNava/20;
+    
     //incep sa desenez triunghiul
     ctx.beginPath();
     ctx.moveTo(nava.x+4/3*nava.r*Math.cos(nava.a),nava.y-4/3*nava.r*Math.sin(nava.a));
     //nava.x reprezinta centrul navei la care adaugam raza * cosinus care reprezinta orizontalul unghiului navei
-    ctx.lineTo(nava.x-nava.r*(2/3*Math.cos(nava.a)-Math.sin(nava.a)),nava.y+nava.r*(Math.sin(nava.a)+Math.cos(nava.a))); //partea din spate din dreapta
-    ctx.lineTo(nava.x-nava.r*(2/3*Math.cos(nava.a)+Math.sin(nava.a)),nava.y+nava.r*(Math.sin(nava.a)-Math.cos(nava.a))); //partea din spate din stanga
+    ctx.lineTo(
+        nava.x-nava.r*(2/3*Math.cos(nava.a)-Math.sin(nava.a)),
+    nava.y+nava.r*(2/3*Math.sin(nava.a)+Math.cos(nava.a))); //partea din spate din dreapta
+    ctx.lineTo(nava.x-nava.r*(2/3*Math.cos(nava.a)+Math.sin(nava.a)),nava.y+nava.r*(2/3*Math.sin(nava.a)-Math.cos(nava.a))); //partea din spate din stanga
     ctx.closePath();
     ctx.stroke();
     ctx.fillStyle="yellow";
@@ -97,8 +124,28 @@ function update(){
     //mut nava
     if(nava.inainteaza)
     {
-        nava.inaintare.x=nava.inaintare.x + acceleratieNava*Math.cos(nava.a)/FPS;
-        nava.inaintare.y=nava.inaintare.x - acceleratieNava*Math.sin(nava.a)/FPS;
+        nava.inaintare.x=nava.inaintare.x + 0.8*acceleratieNava*Math.cos(nava.a)/FPS;
+        nava.inaintare.y=nava.inaintare.y - 0.8*acceleratieNava*Math.sin(nava.a)/FPS;
+       
+       
+        //ii desenez "focul"
+        ctx.fillStype="yellow"
+        ctx.strokeStyle=dimensiuneNava/10;
+        ctx.strokeStyle="red";
+        //incep sa desenez triunghiul
+        ctx.beginPath();
+        //spate stanga
+        ctx.moveTo(nava.x-nava.r*(2/3*Math.cos(nava.a)-0.5*Math.sin(nava.a)),nava.y+nava.r*(Math.sin(nava.a)+0.5*Math.cos(nava.a)));
+        //centru(in spatele navei)
+        ctx.lineTo(
+            nava.x-nava.r*5/3*Math.cos(nava.a),
+            nava.y+nava.r*5/3*Math.sin(nava.a)); //partea din spate din dreapta
+        ctx.lineTo(
+            nava.x-nava.r*(2/3*Math.cos(nava.a)+0.5*Math.sin(nava.a)),
+            nava.y+nava.r*(Math.sin(nava.a)-0.5*Math.cos(nava.a))); //partea din spate din stanga
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
     }
     else
     {
@@ -111,5 +158,37 @@ function update(){
     //rotesc nava
     nava.a+=nava.rotire;
 
+    //pentru a nu iesi din ecran:
+    if(nava.x<0-nava.r)
+        nava.x=canvas.width+nava.r;
+    else
+        if(nava.x>canvas.width+nava.r)
+            nava.x=0-nava.r;
+    if(nava.y<0-nava.r)
+        nava.y=canvas.height+nava.r;
+    else
+        if(nava.y>canvas.height+nava.r)
+            nava.y=0-nava.r;
 
+// ----------------------------------------------------
+// ----------------------------------------------------
+// FINAL NAVA
+// ----------------------------------------------------
+// ----------------------------------------------------
+
+
+// ----------------------------------------------------
+// ----------------------------------------------------
+// ASTEROIZI
+// ----------------------------------------------------
+// ----------------------------------------------------
+
+
+
+
+// ----------------------------------------------------
+// ----------------------------------------------------
+// FINAL ASTEROIZI
+// ----------------------------------------------------
+// ----------------------------------------------------
 }
