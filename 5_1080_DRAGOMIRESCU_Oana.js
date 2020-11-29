@@ -28,9 +28,53 @@ var nava={
     
 }
 // ---------------------------------------------------------------------- NAVA
+// ---------------------------------------------------------------------- ASTEROID
+var asteroizi=[];
+var nrAsteroizi=4; //nr de asteroizi initial
+var vitezaAsteriozi=50;//viteza maxima initiala in pixeli pe secunde
+var dimensiuneAsteroizi=120;//dimensiunea initiala a asteroizilor
+var varfuriAsteroizi=12;//nr mediu de varfuri ale asteroizilor
 
 
+creeazaAsteroizi();
 
+
+function creeazaAsteroizi()
+{
+    asteroizi = [];
+    var x;
+    var y;
+    for(var i=0; i<nrAsteroizi;i++){
+        do {
+            x=Math.floor(Math.random()*canvas.width); //round down
+            y=Math.floor(Math.random()*canvas.height);
+        }
+        while(distantaDintrePuncte(nava.x,nava.y,x,y) <dimensiuneAsteroizi*2+nava.r);
+       
+        asteroizi.push(asteroidNou(x,y));
+    }
+
+}
+
+function distantaDintrePuncte(xn,yn,xa,ya){
+    return Math.sqrt(Math.pow(xa-xn,2)+Math.pow(ya-yn,2));
+}
+
+function asteroidNou(x,y){
+    var asteroid={
+        x:x,
+        y:y,
+        xv:Math.random()*vitezaAsteriozi/FPS*(Math.random()<0.5?1:-1), //viteza aseroid pe ox
+        yv:Math.random()*vitezaAsteriozi/FPS*(Math.random()<0.5?1:-1), //viteza aseroid pe oy
+        r:dimensiuneAsteroizi/2,
+        a:Math.random()*2*Math.PI, //in radiani
+        varf:Math.floor(Math.random()*(varfuriAsteroizi+1)+varfuriAsteroizi/2) //+1 ca sa nu fie 0
+    };
+    return asteroid;
+}
+
+
+// ---------------------------------------------------------------------- ASTEROID
 // ---------------------------------------------------------------------- NAVA
 const keyDown=(eveniment)=>{
     switch(eveniment.keyCode){
@@ -94,10 +138,13 @@ const keyUp=(eveniment)=>{
 //event handlers ca sa rotesc nava
 document.addEventListener("keydown",keyDown);
 document.addEventListener("keyup",keyUp);
-
+// ---------------------------------------------------------------------- NAVA
 //set up the game loop
 setInterval(update,1000/FPS);
-// ---------------------------------------------------------------------- NAVA
+
+
+
+
 function update(){
     //desenez fundalul(spatiul)
     ctx.fillStyle = "#071425";
@@ -173,4 +220,67 @@ function update(){
         if(nava.y>canvas.height+nava.r)
             nava.y=0-nava.r;
     // ---------------------------------------------------------------------- NAVA
+    
+    // ---------------------------------------------------------------------- ASTEROID
+
+    //desenez asterorizii
+    ctx.strokeStyle="#D3D3D3";
+    ctx.lineWidth=dimensiuneNava/20;
+    var x;
+    var y;
+    var r;
+    var a;
+    var varf;
+    for(var i=0; i<asteroizi.length;i++)
+    {
+        //ia proprietatile asteroizilor
+        x=asteroizi[i].x;
+        y=asteroizi[i].y;
+        r=asteroizi[i].r;
+        a=asteroizi[i].a;
+        varf=asteroizi[i].varf;
+
+        //desenez un drum
+        ctx.beginPath();
+        ctx.moveTo(x+r*Math.cos(a),y+r*Math.sin(a));
+
+
+        //forma de cerc/poligon
+            for(var k=0; k<varf;k++)
+            {
+                ctx.lineTo(x+r*Math.cos(a+k*2*Math.PI/varf),y+r*Math.sin(a+k*2*Math.PI/varf));
+            }
+            ctx.closePath();
+            ctx.stroke();
+
+
+        //mut asteroidul
+            asteroizi[i].x=asteroizi[i].x+asteroizi[i].xv;
+            asteroizi[i].y=asteroizi[i].y+asteroizi[i].yv;
+
+        //pentru a nu iesi din ecran
+        if(asteroizi[i].x<0-asteroizi[i].r)
+        {
+            //stanga
+            asteroizi[i].x=canvas.width+asteroizi[i].r;
+        }
+        else
+            if(asteroizi[i].x>canvas.width+asteroizi[i].r)
+              {
+                asteroizi[i].x=0-asteroizi[i].r;
+              }
+
+        if(asteroizi[i].y<0-asteroizi[i].r)
+        {
+            asteroizi[i].y=canvas.height+asteroizi[i].r;
+        }
+        else
+            if(asteroizi[i].y>canvas.height+asteroizi[i].r)
+                {
+                    asteroizi[i].y=0-asteroizi[i].r;
+                 }
+
+    // ---------------------------------------------------------------------- ASTEROID
+
+    }
 }
