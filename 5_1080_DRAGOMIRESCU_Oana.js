@@ -12,8 +12,8 @@ var ctx=canvas.getContext("2d");
 const dimensiuneNava=25;
 const acceleratieNava=2; //pixeli pe secunde
 const FPS=30; //frames per second
-const vitezaIntoarcere=260;//in grade pe secunda
-const fortaFrecare=0.9; //coeficientul de frecare al spatiului 0=nu avem forta de frecare
+const vitezaIntoarcere=360;//in grade pe secunda
+const fortaFrecare=0.7; //coeficientul de frecare al spatiului 0=nu avem forta de frecare
 
 
 var nava={
@@ -32,10 +32,9 @@ var nava={
     
 }
 
-//event handlers ca sa rotesc nava
-document.addEventListener("keydown",keyDown);
-document.addEventListener("keyup",keyUp);
-function keyDown(eveniment){
+
+
+const keyDown=(eveniment)=>{
     switch(eveniment.keyCode){
             //pentru rotit la stanga folosind z si Z
         case 122: 
@@ -65,7 +64,7 @@ function keyDown(eveniment){
             break;
     }
 }
-function keyUp(eveniment){
+const keyUp=(eveniment)=>{
     switch(eveniment.keyCode){
         //stop rotit la stanga
     case 122: 
@@ -74,7 +73,7 @@ function keyUp(eveniment){
     case 90: 
         nava.rotire=0;
             break;
-    case 38: 
+    case 37: 
          nava.rotire=0;
             break;
 
@@ -93,8 +92,11 @@ function keyUp(eveniment){
         nava.rotire=0;
              break;
 }
-
 }
+//event handlers ca sa rotesc nava
+document.addEventListener("keydown",keyDown);
+document.addEventListener("keyup",keyUp);
+
 //set up the game loop
 setInterval(update,1000/FPS);
 
@@ -119,7 +121,8 @@ function update(){
     ctx.stroke();
     ctx.fillStyle="yellow";
     ctx.fillRect(nava.x-1,nava.y-1,2,2); //cercul galben din interiorul navei
-
+    nava.x=nava.x+nava.inaintare.x;
+    nava.y=nava.y+nava.inaintare.y;
 
     //mut nava
     if(nava.inainteaza)
@@ -135,14 +138,16 @@ function update(){
         //incep sa desenez triunghiul
         ctx.beginPath();
         //spate stanga
-        ctx.moveTo(nava.x-nava.r*(2/3*Math.cos(nava.a)-0.5*Math.sin(nava.a)),nava.y+nava.r*(Math.sin(nava.a)+0.5*Math.cos(nava.a)));
+        ctx.moveTo(
+            nava.x-nava.r*(2/3*Math.cos(nava.a)-0.5*Math.sin(nava.a)),
+            nava.y+nava.r*(2/3*Math.sin(nava.a)+0.5*Math.cos(nava.a)));
         //centru(in spatele navei)
         ctx.lineTo(
             nava.x-nava.r*5/3*Math.cos(nava.a),
             nava.y+nava.r*5/3*Math.sin(nava.a)); //partea din spate din dreapta
         ctx.lineTo(
             nava.x-nava.r*(2/3*Math.cos(nava.a)+0.5*Math.sin(nava.a)),
-            nava.y+nava.r*(Math.sin(nava.a)-0.5*Math.cos(nava.a))); //partea din spate din stanga
+            nava.y+nava.r*(2/3*Math.sin(nava.a)-0.5*Math.cos(nava.a))); //partea din spate din stanga
         ctx.closePath();
         ctx.fill();
         ctx.stroke();
@@ -150,10 +155,9 @@ function update(){
     else
     {
         nava.inaintare.x= nava.inaintare.x-fortaFrecare*nava.inaintare.x/FPS;
-        nava.inaintare.y= nava.inaintare.y+fortaFrecare*nava.inaintare.y/FPS;
+        nava.inaintare.y= nava.inaintare.y-fortaFrecare*nava.inaintare.y/FPS;
     }
-    nava.x=nava.x+nava.inaintare.x;
-    nava.y=nava.y+nava.inaintare.y;
+
 
     //rotesc nava
     nava.a+=nava.rotire;
