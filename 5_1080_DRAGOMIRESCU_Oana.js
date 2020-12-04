@@ -10,7 +10,7 @@ const acceleratieNava = 2; //pixeli pe secunde
 const FPS = 30; //frames per second
 const vitezaIntoarcere = 360;//in grade pe secunda
 const fortaFrecare = 0.7; //coeficientul de frecare al spatiului 0=nu avem forta de frecare
-
+const durataExplozieNava=0.5;//cat dureaza explozia navei
 
 var nava = {
     x: canvas.width / 2,
@@ -19,6 +19,7 @@ var nava = {
     r: dimensiuneNava / 2,
     a: 90 / 180 * Math.PI, //conversie in radius; angle - directia navei
     rotire: 0,
+    timpExplozie:0,
     //pentru mers:
     inainteaza: false,
     inaintare: {
@@ -76,7 +77,7 @@ function asteroidNou(x, y) {
 // ---------------------------------------------------------------------- ASTEROID
 
 // ---------------------------------------------------------------------- COLIZIUNI
-const margini = true; //margini pentru coliziune folosind cerc
+const margini = false; //margini pentru coliziune folosind cerc
 // ---------------------------------------------------------------------- COLIZIUNI
 
 
@@ -148,14 +149,29 @@ document.addEventListener("keyup", keyUp);
 setInterval(update, 1000 / FPS);
 
 
+function explodeazaNava(){
+    // ctx.fillStyle="#B20000";
+    // ctx.strokeStyle="#B20000";
+    // ctx.beginPath();
+    // ctx.arc(nava.x,nava.y,nava.r,0,2*Math.PI,false);
+    // ctx.fill();
+    // ctx.stroke();
+    nava.timpExplozie=Math.ceil(durataExplozieNava*FPS)
+}
 
 
 function update() {
+     // ---------------------------------------------------------------------- EXPLOZIE
+     var explozieNava=nava.timpExplozie>0;
+
+     // ---------------------------------------------------------------------- EXPLOZIE
+
     //desenez fundalul(spatiul)
     ctx.fillStyle = "#071425";
     ctx.fillRect(0, 0, canvas.width, canvas.height); //700,700
 
     // ---------------------------------------------------------------------- NAVA
+    if(!explozieNava){
     //desenez nava in forma de triunghi
     ctx.strokeStyle = "yellow";
     ctx.lineWidth = dimensiuneNava / 20;
@@ -170,16 +186,57 @@ function update() {
     ctx.lineTo(nava.x - nava.r * (2 / 3 * Math.cos(nava.a) + Math.sin(nava.a)), nava.y + nava.r * (2 / 3 * Math.sin(nava.a) - Math.cos(nava.a))); //partea din spate din stanga
     ctx.closePath();
     ctx.stroke();
+        }
+        else{
+            //desenez explozia
+
+            ctx.fillStyle="#7F0000";
+            ctx.beginPath();
+            ctx.arc(nava.x,nava.y,nava.r*1.7,0,2*Math.PI,false);
+            ctx.fill(); 
+            
+            ctx.fillStyle="#FF0000";
+            ctx.beginPath();
+            ctx.arc(nava.x,nava.y,nava.r*1.4,0,2*Math.PI,false);
+            ctx.fill();
+
+            ctx.fillStyle="#f2af0f";
+            ctx.beginPath();
+            ctx.arc(nava.x,nava.y,nava.r*1.1,0,2*Math.PI,false);
+            ctx.fill();
+
+            ctx.fillStyle="#f5f63d";
+            ctx.beginPath();
+            ctx.arc(nava.x,nava.y,nava.r*0.8,0,2*Math.PI,false);
+            ctx.fill();
+
+            ctx.fillStyle="#fdfdfd"; 
+            ctx.beginPath();
+            ctx.arc(nava.x,nava.y,nava.r*0.4,0,2*Math.PI,false);
+            ctx.fill();
+
+            
+        }
+
+    // ---------------------------------------------------------------------- COLIZIUNI
+    if (margini) {
+        ctx.strokeStyle = "pink";
+        ctx.beginPath();
+        ctx.arc(nava.x, nava.y, nava.r, 0, 2 * Math.PI, false);
+        ctx.stroke();
+    }
+
+    // ---------------------------------------------------------------------- ACOLIZIUNI
+        
     ctx.fillStyle = "yellow";
     ctx.fillRect(nava.x - 1, nava.y - 1, 2, 2); //cercul galben din interiorul navei
     nava.x = nava.x + nava.inaintare.x;
     nava.y = nava.y + nava.inaintare.y;
-
+   
     //mut nava
     if (nava.inainteaza) {
         nava.inaintare.x = nava.inaintare.x + 0.8 * acceleratieNava * Math.cos(nava.a) / FPS;
         nava.inaintare.y = nava.inaintare.y - 0.8 * acceleratieNava * Math.sin(nava.a) / FPS;
-
 
         //ii desenez "focul"
         ctx.fillStype = "yellow"
@@ -206,6 +263,8 @@ function update() {
         nava.inaintare.x = nava.inaintare.x - fortaFrecare * nava.inaintare.x / FPS;
         nava.inaintare.y = nava.inaintare.y - fortaFrecare * nava.inaintare.y / FPS;
     }
+   
+
 
     // ---------------------------------------------------------------------- NAVA
     //rotesc nava
@@ -224,16 +283,7 @@ function update() {
             nava.y = 0 - nava.r;
     // ---------------------------------------------------------------------- NAVA
 
-    // ---------------------------------------------------------------------- COLIZIUNI
-    if (margini) {
-        ctx.strokeStyle = "pink";
-        ctx.beginPath();
-        ctx.arc(nava.x, nava.y, nava.r, 0, 2 * Math.PI, false);
-        ctx.stroke();
-    }
-
-    // ---------------------------------------------------------------------- ACOLIZIUNI
-
+    
     // ---------------------------------------------------------------------- ASTEROID
 
     //desenez asterorizii
@@ -283,6 +333,8 @@ function update() {
         }
 
         // ---------------------------------------------------------------------- ACOLIZIUNI
+
+       
     }
     //mut asteroidul
     for (var i = 0; i < asteroizi.length; i++) {
@@ -312,11 +364,11 @@ function update() {
 
 
     // ---------------------------------------------------------------------- COLIZIUNI
+ 
     //verific daca exista coliziuni cu asteroizii
     for (var i = 0; i < asteroizi.length; i++) {
         if (distantaDintrePuncte(nava.x, nava.y, asteroizi[i].x, asteroizi[i].y) < nava.r + asteroizi[i].r)
             explodeazaNava();
     }
     // ---------------------------------------------------------------------- COLIZIUNI
-
 }
