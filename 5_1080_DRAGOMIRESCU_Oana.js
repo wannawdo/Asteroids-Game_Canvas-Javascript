@@ -11,23 +11,27 @@ const FPS = 30; //frames per second
 const vitezaIntoarcere = 360;//in grade pe secunda
 const fortaFrecare = 0.7; //coeficientul de frecare al spatiului 0=nu avem forta de frecare
 const durataExplozieNava=0.5;//cat dureaza explozia navei
+const imunitateNava=5;//cat timp nava nu poate fi omorata de asteroizi cand se reseteaza
+const durataLicaritNava=0.2;//cat licareste nava cat e imuna
 
-var nava = {
-    x: canvas.width / 2,
-    y: canvas.height / 2,
-    //sa apara la mijloc
-    r: dimensiuneNava / 2,
-    a: 90 / 180 * Math.PI, //conversie in radius; angle - directia navei
-    rotire: 0,
-    timpExplozie:0,
-    //pentru mers:
-    inainteaza: false,
-    inaintare: {
-        x: 0,
-        y: 0
-    }
+var nava = navaNoua();//{
+    // x: canvas.width / 2,
+    // y: canvas.height / 2,
+    // //sa apara la mijloc
+    // r: dimensiuneNava / 2,
+    // a: 90 / 180 * Math.PI, //conversie in radius; angle - directia navei
+    // rotire: 0,
+    // timpExplozie:0,
+    // //pentru mers:
+    // inainteaza: false,
+    // inaintare: {
+    //     x: 0,
+    //     y: 0
+    // }
 
-}
+//}
+
+
 // ---------------------------------------------------------------------- NAVA
 // ---------------------------------------------------------------------- ASTEROID
 var asteroizi = [];
@@ -82,6 +86,26 @@ const margini = false; //margini pentru coliziune folosind cerc
 
 
 // ---------------------------------------------------------------------- NAVA
+
+function navaNoua(){
+    return {
+         x: canvas.width / 2,
+         y: canvas.height / 2,
+         //sa apara la mijloc
+         r: dimensiuneNava / 2,
+         a: 90 / 180 * Math.PI, //conversie in radius; angle - directia navei
+         rotire: 0,
+         timpExplozie:0,
+         timpLicarit:Math.ceil(durataLicaritNava*FPS),
+         nrLicarit:Math.ceil(imunitateNava/durataLicaritNava),
+         //pentru mers:
+         inainteaza: false,
+         inaintare: {
+             x: 0,
+             y: 0
+         }
+    }
+}
 const keyDown = (eveniment) => {
     switch (eveniment.keyCode) {
         //pentru rotit la stanga folosind z si Z
@@ -162,8 +186,8 @@ function explodeazaNava(){
 
 function update() {
      // ---------------------------------------------------------------------- EXPLOZIE
-     var explozieNava=nava.timpExplozie>0;
-
+    var explozieNava=nava.timpExplozie>0;
+    var licarit=nava.nrLicarit%2==0;
      // ---------------------------------------------------------------------- EXPLOZIE
 
     //desenez fundalul(spatiul)
@@ -172,27 +196,43 @@ function update() {
 
     // ---------------------------------------------------------------------- NAVA
     if(!explozieNava){
-    //desenez nava in forma de triunghi
-    ctx.strokeStyle = "yellow";
-    ctx.lineWidth = dimensiuneNava / 20;
+        if(licarit){
+            //desenez nava in forma de triunghi
+            ctx.strokeStyle = "yellow";
+            ctx.lineWidth = dimensiuneNava / 20;
 
-    //incep sa desenez triunghiul
-    ctx.beginPath();
-    ctx.moveTo(nava.x + 4 / 3 * nava.r * Math.cos(nava.a), nava.y - 4 / 3 * nava.r * Math.sin(nava.a));
-    //nava.x reprezinta centrul navei la care adaugam raza * cosinus care reprezinta orizontalul unghiului navei
-    ctx.lineTo(
-        nava.x - nava.r * (2 / 3 * Math.cos(nava.a) - Math.sin(nava.a)),
-        nava.y + nava.r * (2 / 3 * Math.sin(nava.a) + Math.cos(nava.a))); //partea din spate din dreapta
-    ctx.lineTo(nava.x - nava.r * (2 / 3 * Math.cos(nava.a) + Math.sin(nava.a)), nava.y + nava.r * (2 / 3 * Math.sin(nava.a) - Math.cos(nava.a))); //partea din spate din stanga
-    ctx.closePath();
-    ctx.stroke();
+            //incep sa desenez triunghiul
+            ctx.beginPath();
+            ctx.moveTo(nava.x + 4 / 3 * nava.r * Math.cos(nava.a), nava.y - 4 / 3 * nava.r * Math.sin(nava.a));
+            //nava.x reprezinta centrul navei la care adaugam raza * cosinus care reprezinta orizontalul unghiului navei
+            ctx.lineTo(
+                nava.x - nava.r * (2 / 3 * Math.cos(nava.a) - Math.sin(nava.a)),
+                nava.y + nava.r * (2 / 3 * Math.sin(nava.a) + Math.cos(nava.a))); //partea din spate din dreapta
+            ctx.lineTo(nava.x - nava.r * (2 / 3 * Math.cos(nava.a) + Math.sin(nava.a)), nava.y + nava.r * (2 / 3 * Math.sin(nava.a) - Math.cos(nava.a))); //partea din spate din stanga
+            ctx.closePath();
+            ctx.stroke();
+
+            ctx.fillStyle = "yellow";
+            ctx.fillRect(nava.x - 1, nava.y - 1, 2, 2); //cercul galben din interiorul navei
+            }
+            //ma ocup de licarit
+            if(nava.nrLicarit>0){
+                //scad trimpul de licarit
+                nava.timpLicarit--;
+
+                // scad nr de licariri
+                if(nava.timpLicarit==0){
+                    nava.timpLicarit=Math.ceil(durataLicaritNava*FPS);
+                    nava.nrLicarit--;
+                }
+            }
         }
         else{
             //desenez explozia
 
             ctx.fillStyle="#7F0000";
             ctx.beginPath();
-            ctx.arc(nava.x,nava.y,nava.r*1.7,0,2*Math.PI,false);
+            ctx.arc(nava.x,nava.y,nava.r*1.9,0,2*Math.PI,false);
             ctx.fill(); 
             
             ctx.fillStyle="#FF0000";
@@ -228,16 +268,15 @@ function update() {
 
     // ---------------------------------------------------------------------- ACOLIZIUNI
         
-    ctx.fillStyle = "yellow";
-    ctx.fillRect(nava.x - 1, nava.y - 1, 2, 2); //cercul galben din interiorul navei
-    nava.x = nava.x + nava.inaintare.x;
-    nava.y = nava.y + nava.inaintare.y;
+    
+    
    
     //mut nava
     if (nava.inainteaza) {
         nava.inaintare.x = nava.inaintare.x + 0.8 * acceleratieNava * Math.cos(nava.a) / FPS;
         nava.inaintare.y = nava.inaintare.y - 0.8 * acceleratieNava * Math.sin(nava.a) / FPS;
 
+        if(!explozieNava && licarit){
         //ii desenez "focul"
         ctx.fillStype = "yellow"
         ctx.strokeStyle = dimensiuneNava / 10;
@@ -258,6 +297,8 @@ function update() {
         ctx.closePath();
         ctx.fill();
         ctx.stroke();
+        }
+      
     }
     else {
         nava.inaintare.x = nava.inaintare.x - fortaFrecare * nava.inaintare.x / FPS;
@@ -267,20 +308,33 @@ function update() {
 
 
     // ---------------------------------------------------------------------- NAVA
-    //rotesc nava
-    nava.a += nava.rotire;
+    if(!explozieNava){
+        //mut nava 
+        nava.x = nava.x + nava.inaintare.x;
+        nava.y = nava.y + nava.inaintare.y;
+        //rotesc nava
+        nava.a += nava.rotire;
+    }
+    else
+    {
+        nava.timpExplozie--;
+        if(nava.timpExplozie==0){
+            nava=navaNoua();
+        }
+    }
 
-    //pentru a nu iesi din ecran:
-    if (nava.x < 0 - nava.r)
-        nava.x = canvas.width + nava.r;
-    else
-        if (nava.x > canvas.width + nava.r)
-            nava.x = 0 - nava.r;
-    if (nava.y < 0 - nava.r)
-        nava.y = canvas.height + nava.r;
-    else
-        if (nava.y > canvas.height + nava.r)
-            nava.y = 0 - nava.r;
+        //pentru a nu iesi din ecran:
+        if (nava.x < 0 - nava.r)
+            nava.x = canvas.width + nava.r;
+        else
+            if (nava.x > canvas.width + nava.r)
+                nava.x = 0 - nava.r;
+        if (nava.y < 0 - nava.r)
+            nava.y = canvas.height + nava.r;
+        else
+            if (nava.y > canvas.height + nava.r)
+                nava.y = 0 - nava.r;
+    
     // ---------------------------------------------------------------------- NAVA
 
     
@@ -364,11 +418,14 @@ function update() {
 
 
     // ---------------------------------------------------------------------- COLIZIUNI
- 
+    if(!explozieNava){
     //verific daca exista coliziuni cu asteroizii
-    for (var i = 0; i < asteroizi.length; i++) {
-        if (distantaDintrePuncte(nava.x, nava.y, asteroizi[i].x, asteroizi[i].y) < nava.r + asteroizi[i].r)
-            explodeazaNava();
+    if(nava.nrLicarit==0){
+        for (var i = 0; i < asteroizi.length; i++) {
+            if (distantaDintrePuncte(nava.x, nava.y, asteroizi[i].x, asteroizi[i].y) < nava.r + asteroizi[i].r)
+                explodeazaNava();
+            }
+        }
     }
     // ---------------------------------------------------------------------- COLIZIUNI
 }
