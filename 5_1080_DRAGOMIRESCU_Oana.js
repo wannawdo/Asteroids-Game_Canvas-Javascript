@@ -64,14 +64,16 @@ function creeazaAsteroizi() {
     asteroizi = [];
     var x;
     var y;
+    var r;
     for (var i = 0; i < nrAsteroizi; i++) {
         do {
             x = Math.floor(Math.random() * canvas.width); //round down
             y = Math.floor(Math.random() * canvas.height);
+            r = Math.floor(Math.random()*60)+40;
         }
         while (distantaDintrePuncte(nava.x, nava.y, x, y) < dimensiuneAsteroizi * 2 + nava.r);
 
-        asteroizi.push(asteroidNou(x, y, Math.ceil(dimensiuneAsteroizi / 2)));
+        asteroizi.push(asteroidNou(x, y, r ));
     }
 
 }
@@ -87,15 +89,20 @@ function distrugeAsteroid(index) {
     var r = asteroizi[index].r;
 
     //impartim asteroidul in 2
-    if (r == Math.ceil(dimensiuneAsteroizi / 2)) {
-        asteroizi.push(asteroidNou(x, y, Math.ceil(dimensiuneAsteroizi / 4)));
-        asteroizi.push(asteroidNou(x, y, Math.ceil(dimensiuneAsteroizi / 4)));
+    if (r > 70) {
+        asteroizi.push(asteroidNou(x, y, 51));
+        //asteroizi.push(asteroidNou(x, y, Math.ceil(dimensiuneAsteroizi / 4)));
     }
     else
-        if (r == Math.ceil(dimensiuneAsteroizi / 4)) {
-            asteroizi.push(asteroidNou(x, y, Math.ceil(dimensiuneAsteroizi / 8)));
-            asteroizi.push(asteroidNou(x, y, Math.ceil(dimensiuneAsteroizi / 8)));
+        if (r >58 && r<=70) {
+            asteroizi.push(asteroidNou(x, y, 50));
+            //asteroizi.push(asteroidNou(x, y, Math.ceil(dimensiuneAsteroizi / 8)));
         }
+        else
+            if(r>40 && r<=58)
+                asteroizi.push(asteroidNou(x, y, 35));
+                
+
 
     //distrug asteroidul
     asteroizi.splice(index, 1);
@@ -469,9 +476,10 @@ function update() {
     var r;
     var a;
     var varf;
+    ctx.lineWidth = dimensiuneNava / 20;
     for (var i = 0; i < asteroizi.length; i++) {
         ctx.strokeStyle = "#D3D3D3";
-        ctx.lineWidth = dimensiuneNava / 20;
+      
         //ia proprietatile asteroizilor
         x = asteroizi[i].x;
         y = asteroizi[i].y;
@@ -484,21 +492,62 @@ function update() {
         ctx.beginPath();
         // ctx.moveTo(x + r * Math.cos(a), y + r * Math.sin(a));
 
-
-
         //forma de cerc/poligon
 
-        ctx.translate(x, y)
+        ctx.translate(x, y);
         ctx.arc(0, 0, r, 0, 2 * Math.PI);
-
-
-        // for (var k = 0; k < varf; k++) {
-        //     ctx.lineTo(x + r * Math.cos(a + k * 2 * Math.PI / varf), y + r * Math.sin(a + k * 2 * Math.PI / varf));
-        // }
-        // ctx.closePath();
         ctx.stroke();
-        ctx.restore()
-
+        ctx.restore();
+        if(asteroizi[i].r>70){
+            ctx.stokeStyle="yellow";
+            ctx.stroke();
+            }
+            else
+                if(asteroizi[i].r>58)
+                {
+                    ctx.stokeStyle="green";
+                    ctx.stroke();
+                }
+                else
+                if(asteroizi[i].r>40)
+                {
+                    ctx.stokeStyle="orange";
+                    ctx.stroke();
+                }
+                else    
+                if(asteroizi[i].r>0)
+                {
+                    ctx.stokeStyle="pink";
+                    ctx.stroke();
+                }
+        ctx.textAlign='center';
+        ctx.fillStyle='white';
+        ctx.font='25px Courier New';
+        ctx.beginPath();
+        if(asteroizi[i].r>70){
+            ctx.fillText("4",x,y);
+           // ctx.strokeStyle='yellow';
+            //ctx.fill();
+            }
+            else
+                if(asteroizi[i].r>58)
+                {
+                    ctx.fillText("3",x,y);
+                   // ctx.strokeStyle='green';
+                    //ctx.fill();
+                }
+                else
+                if(asteroizi[i].r>40)
+                {
+                    ctx.fillText("2",x,y);
+                }
+                else    
+                if(asteroizi[i].r>0)
+                {
+                    ctx.fillText("1",x,y);
+                }
+                
+               
 
         // ---------------------------------------------------------------------- COLIZIUNI
         if (margini) {
