@@ -360,7 +360,7 @@ function update() {
             //verificam daca atinge asteroizii
             if (distantaDintrePuncte(xAsteroid, yAsteroid, xRacheta, yRacheta) < rAsteroid) {
                 //stergem racheta
-               // nava.rachete.splice(j, i);
+                nava.rachete.splice(j, i);
 
                 //stergem astertoidul
                 distrugeAsteroid(i);
@@ -609,10 +609,10 @@ function update() {
                 asteroizi[i].yv=-1*asteroizi[i].yv;
                 asteroizi[j].xv=-1*asteroizi[j].xv;
                 asteroizi[j].yv=-1*asteroizi[j].yv;
-                asteroizi[j].x=asteroizi[j].x-5;
-                asteroizi[j].y=asteroizi[j].y-5;
-                asteroizi[i].x=asteroizi[i].x+3;
-                asteroizi[i].y=asteroizi[i].y+3;
+                asteroizi[j].x=asteroizi[j].x-1;
+                asteroizi[j].y=asteroizi[j].y-1;
+                asteroizi[i].x=asteroizi[i].x+1;
+                asteroizi[i].y=asteroizi[i].y+1;
             }
         }
     }
