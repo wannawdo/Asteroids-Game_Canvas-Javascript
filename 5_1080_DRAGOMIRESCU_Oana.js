@@ -499,25 +499,25 @@ function update() {
         ctx.stroke();
         ctx.restore();
         if(asteroizi[i].r>70){
-            ctx.stokeStyle="yellow";
+            ctx.stokeStyle="#CAC9C5";
             ctx.stroke();
             }
             else
                 if(asteroizi[i].r>58)
                 {
-                    ctx.stokeStyle="green";
+                    ctx.stokeStyle="#ABA8A3";
                     ctx.stroke();
                 }
                 else
                 if(asteroizi[i].r>40)
                 {
-                    ctx.stokeStyle="orange";
+                    ctx.stokeStyle="#F8F0ED";
                     ctx.stroke();
                 }
                 else    
                 if(asteroizi[i].r>0)
                 {
-                    ctx.stokeStyle="pink";
+                    ctx.stokeStyle="#797B7A";
                     ctx.stroke();
                 }
         ctx.textAlign='center';
@@ -600,5 +600,22 @@ function update() {
             }
         }
     }
+     //coliziune intre asteroizi
+     for (var i=0;i<asteroizi.length;i++){
+        for(var j=i+1; j<asteroizi.length;j++)
+        {
+            if(distantaDintrePuncte(asteroizi[i].x, asteroizi[i].y, asteroizi[j].x, asteroizi[j].y)<asteroizi[i].r+asteroizi[j].r){
+                asteroizi[i].xv=-1*asteroizi[i].xv;
+                asteroizi[i].yv=-1*asteroizi[i].yv;
+                asteroizi[j].xv=-1*asteroizi[j].xv;
+                asteroizi[j].yv=-1*asteroizi[j].yv;
+                asteroizi[j].x=asteroizi[j].x-5;
+                asteroizi[j].y=asteroizi[j].y-5;
+                asteroizi[i].x=asteroizi[i].x+3;
+                asteroizi[i].y=asteroizi[i].y+3;
+            }
+        }
+    }
+   
     // ---------------------------------------------------------------------- COLIZIUNI
 }
