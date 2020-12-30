@@ -6,7 +6,7 @@ var ctx = canvas.getContext("2d");
 // ---------------------------------------------------------------------- NAVA
 
 const dimensiuneNava = 25;
-const acceleratieNava = 2; //pixeli pe secunde
+const acceleratieNava = 15; //pixeli pe secunde
 const FPS = 30; //frames per second
 const vitezaIntoarcere = 360;//in grade pe secunda
 const fortaFrecare = 0.7; //coeficientul de frecare al spatiului 0=nu avem forta de frecare
@@ -70,6 +70,7 @@ function creeazaAsteroizi() {
             x = Math.floor(Math.random() * canvas.width); //round down
             y = Math.floor(Math.random() * canvas.height);
             r = Math.floor(Math.random()*60)+40;
+            console.log(r)
         }
         while (distantaDintrePuncte(nava.x, nava.y, x, y) < dimensiuneAsteroizi * 2 + nava.r);
 
@@ -90,7 +91,7 @@ function distrugeAsteroid(index) {
 
     //impartim asteroidul in 2
     if (r > 70) {
-        asteroizi.push(asteroidNou(x, y, 51));
+        asteroizi.push(asteroidNou(x, y, 61));
         //asteroizi.push(asteroidNou(x, y, Math.ceil(dimensiuneAsteroizi / 4)));
     }
     else
@@ -132,6 +133,9 @@ function navaNoua() {
         nrLicarit: Math.ceil(imunitateNava / durataLicaritNava),
         //pentru mers:
         inainteaza: false,
+        inainteazaInapoi:false,
+        inainteazaStanga:false,
+        inainteazaDreapta:false,
         inaintare: {
             x: 0,
             y: 0
@@ -150,7 +154,7 @@ const keyDown = (eveniment) => {
             break;
         //sagetica stanga
         case 37:
-            nava.rotire = vitezaIntoarcere / 180 * Math.PI / FPS;
+            nava.inainteazaStanga=true;
             break;
         //sus -> merge drept
         case 38:
@@ -166,7 +170,12 @@ const keyDown = (eveniment) => {
             break;
         //sageata dreapta
         case 39:
-            nava.rotire = -vitezaIntoarcere / 180 * Math.PI / FPS;
+            nava.inainteazaDreapta=true;
+            break;
+
+        //sagetica jos
+        case 40:
+            nava.inainteazaInapoi=true;
             break;
 
         //pentru rachete: (x)
@@ -185,7 +194,7 @@ const keyUp = (eveniment) => {
             nava.rotire = 0;
             break;
         case 37:
-            nava.rotire = 0;
+            nava.inainteazaStanga=false;
             break;
 
         //stop  mers drept
@@ -200,7 +209,12 @@ const keyUp = (eveniment) => {
             nava.rotire = 0;
             break;
         case 39:
-            nava.rotire = 0;
+            nava.inainteazaDreapta=false;
+            break;
+
+        //pentru inapoi
+        case 40:
+            nava.inainteazaInapoi=false;
             break;
 
         //pentru rachete: (x)
@@ -405,6 +419,38 @@ function update() {
         nava.inaintare.x = nava.inaintare.x - fortaFrecare * nava.inaintare.x / FPS;
         nava.inaintare.y = nava.inaintare.y - fortaFrecare * nava.inaintare.y / FPS;
     }
+    //pentru mers inapoi
+    if(nava.inainteazaInapoi){
+        nava.inaintare.x = nava.inaintare.x - 0.8 * acceleratieNava * Math.cos(nava.a) / FPS;
+        nava.inaintare.y = nava.inaintare.y + 0.8 * acceleratieNava * Math.sin(nava.a) / FPS;
+    }
+    else {
+        nava.inaintare.x = nava.inaintare.x - fortaFrecare * nava.inaintare.x / FPS;
+        nava.inaintare.y = nava.inaintare.y - fortaFrecare * nava.inaintare.y / FPS;
+    }
+
+    //pentru mers dreapta
+    if(nava.inainteazaDreapta){
+        nava.inaintare.x = nava.inaintare.x + 0.8 * acceleratieNava * Math.sin(nava.a) / FPS;
+        nava.inaintare.y = nava.inaintare.y + 0.8 * acceleratieNava * Math.cos(nava.a) / FPS;
+    }
+    else {
+        nava.inaintare.x = nava.inaintare.x - fortaFrecare * nava.inaintare.x / FPS;
+        nava.inaintare.y = nava.inaintare.y - fortaFrecare * nava.inaintare.y / FPS;
+    }
+
+    //pentru mers stanga
+    if(nava.inainteazaStanga){
+        nava.inaintare.x = nava.inaintare.x - 0.8 * acceleratieNava * Math.sin(nava.a) / FPS;
+        nava.inaintare.y = nava.inaintare.y - 0.8 * acceleratieNava * Math.cos(nava.a) / FPS;
+    }
+    else {
+        nava.inaintare.x = nava.inaintare.x - fortaFrecare * nava.inaintare.x / FPS;
+        nava.inaintare.y = nava.inaintare.y - fortaFrecare * nava.inaintare.y / FPS;
+    }
+
+
+    
     // ---------------------------------------------------------------------- NAVA - RACHETE
     //mut rachetele
     for (var i = nava.rachete.length - 1; i >= 0; i--) {
@@ -478,7 +524,7 @@ function update() {
     var varf;
     ctx.lineWidth = dimensiuneNava / 20;
     for (var i = 0; i < asteroizi.length; i++) {
-        ctx.strokeStyle = "#D3D3D3";
+        //ctx.strokeStyle = "#D3D3D3";
       
         //ia proprietatile asteroizilor
         x = asteroizi[i].x;
@@ -487,65 +533,61 @@ function update() {
         a = asteroizi[i].a;
         varf = asteroizi[i].varf;
 
-        ctx.save()
+        //ctx.save()
         //desenez un drum
         ctx.beginPath();
         // ctx.moveTo(x + r * Math.cos(a), y + r * Math.sin(a));
 
         //forma de cerc/poligon
 
-        ctx.translate(x, y);
-        ctx.arc(0, 0, r, 0, 2 * Math.PI);
-        ctx.stroke();
-        ctx.restore();
+        //ctx.translate(x, y);
+        ctx.arc(x, y, r, 0, 2 * Math.PI);
+        // ctx.stroke();
+        //ctx.restore();
         if(asteroizi[i].r>70){
-            ctx.stokeStyle="#CAC9C5";
-            ctx.stroke();
+            ctx.fillStyle="#CAC9C5";
+            ctx.fill();
             }
             else
                 if(asteroizi[i].r>58)
                 {
-                    ctx.stokeStyle="#ABA8A3";
-                    ctx.stroke();
+                    ctx.fillStyle="#ABA8A3";
+                    ctx.fill();
                 }
                 else
-                if(asteroizi[i].r>40)
-                {
-                    ctx.stokeStyle="#F8F0ED";
-                    ctx.stroke();
-                }
-                else    
-                if(asteroizi[i].r>0)
-                {
-                    ctx.stokeStyle="#797B7A";
-                    ctx.stroke();
-                }
+                    if(asteroizi[i].r>40)
+                    {
+                        ctx.fillStyle="#F8F0ED";
+                        ctx.fill();
+                    }
+                    else    
+                        if(asteroizi[i].r>0)
+                        {
+                            ctx.fillStyle="#797B7A";
+                            ctx.fill();
+                        }
         ctx.textAlign='center';
-        ctx.fillStyle='white';
+        ctx.fillStyle='black';
         ctx.font='25px Courier New';
         ctx.beginPath();
         if(asteroizi[i].r>70){
-            ctx.fillText("4",x,y);
-           // ctx.strokeStyle='yellow';
-            //ctx.fill();
+            ctx.fillText("4",x,y);        
             }
             else
                 if(asteroizi[i].r>58)
                 {
                     ctx.fillText("3",x,y);
-                   // ctx.strokeStyle='green';
-                    //ctx.fill();
                 }
                 else
-                if(asteroizi[i].r>40)
-                {
-                    ctx.fillText("2",x,y);
-                }
-                else    
-                if(asteroizi[i].r>0)
-                {
-                    ctx.fillText("1",x,y);
-                }
+                    if(asteroizi[i].r>40)
+                    {
+                        ctx.fillText("2",x,y);
+                    }
+                    else    
+                        if(asteroizi[i].r>0)
+                        {
+                            ctx.fillText("1",x,y);
+                        }
                 
                
 
@@ -595,7 +637,7 @@ function update() {
             for (var i = 0; i < asteroizi.length; i++) {
                 if (distantaDintrePuncte(nava.x, nava.y, asteroizi[i].x, asteroizi[i].y) < nava.r + asteroizi[i].r){
                     explodeazaNava();
-                    distrugeAsteroid(i);}
+                    }
                
             }
         }
