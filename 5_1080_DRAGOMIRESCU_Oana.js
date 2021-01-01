@@ -17,7 +17,7 @@ const nrMaximRachete = 2;//nr maxim de rachete care pot fi lansate  simultan pe 
 const vitezaRachete = 450;//in pixeli pe secunde
 const distantaRachete = 0.4;//1=canvas.width;
 
-var nava = navaNoua();//{
+//var nava = navaNoua();//{
 // x: canvas.width / 2,
 // y: canvas.height / 2,
 // //sa apara la mijloc
@@ -37,21 +37,26 @@ var nava = navaNoua();//{
 
 // ---------------------------------------------------------------------- NAVA
 // ---------------------------------------------------------------------- ASTEROID
-var asteroizi = [];
+//var asteroizi = [];
 var nrAsteroizi = 4; //nr de asteroizi initial
 var vitezaAsteriozi = 50;//viteza maxima initiala in pixeli pe secunde
 var dimensiuneAsteroizi = 120;//dimensiunea initiala a asteroizilor
 var varfuriAsteroizi = 12;//nr mediu de varfuri ale asteroizilor
+var puncteAsteroid1=20;
+var puncteAsteroid2=15;
+var puncteAsteroid3=10;
+var puncteAsteroid4=5;
 
 
 
 
 function asteroidNou(x, y, r) {
+    var cresteVitezaDupaNivel=1+0.1*nivel;
     var asteroid = {
         x: x,
         y: y,
-        xv: Math.random() * vitezaAsteriozi / FPS * (Math.random() < 0.5 ? 1 : -1), //viteza aseroid pe ox
-        yv: Math.random() * vitezaAsteriozi / FPS * (Math.random() < 0.5 ? 1 : -1), //viteza aseroid pe oy
+        xv: Math.random() * cresteVitezaDupaNivel * vitezaAsteriozi / FPS * (Math.random() < 0.5 ? 1 : -1), //viteza aseroid pe ox
+        yv: Math.random() * cresteVitezaDupaNivel * vitezaAsteriozi / FPS * (Math.random() < 0.5 ? 1 : -1), //viteza aseroid pe oy
         r: r,
         a: Math.random() * 2 * Math.PI, //in radiani
         varf: Math.floor(Math.random() * (varfuriAsteroizi + 1) + varfuriAsteroizi / 2) //+1 ca sa nu fie 0
@@ -65,7 +70,7 @@ function creeazaAsteroizi() {
     var x;
     var y;
     var r;
-    for (var i = 0; i < nrAsteroizi; i++) {
+    for (var i = 0; i < nivel+nrAsteroizi; i++) {
         do {
             x = Math.floor(Math.random() * canvas.width); //round down
             y = Math.floor(Math.random() * canvas.height);
@@ -81,6 +86,21 @@ function creeazaAsteroizi() {
 
 function distantaDintrePuncte(xn, yn, xa, ya) {
     return Math.sqrt(Math.pow(xa - xn, 2) + Math.pow(ya - yn, 2));
+}
+
+function deseneazaNava(x,y,a,culoare="yellow"){
+    //desenez nava in forma de triunghi
+    ctx.strokeStyle = culoare;
+    ctx.lineWidth = dimensiuneNava / 20;
+
+    //incep sa desenez triunghiul
+    ctx.beginPath();
+    ctx.moveTo(x + 4 / 3 * nava.r * Math.cos(a), y - 4 / 3 * nava.r * Math.sin(a));
+    //nava.x reprezinta centrul navei la care adaugam raza * cosinus care reprezinta orizontalul unghiului navei
+    ctx.lineTo(x - nava.r * (2 / 3 * Math.cos(a) - Math.sin(a)), y + nava.r * (2 / 3 * Math.sin(a) + Math.cos(a))); //partea din spate din dreapta
+    ctx.lineTo(x - nava.r * (2 / 3 * Math.cos(a) + Math.sin(a)), y + nava.r * (2 / 3 * Math.sin(a) - Math.cos(a))); //partea din spate din stanga
+    ctx.closePath();
+    ctx.stroke();
 }
 
 function distrugeAsteroid(index) {
@@ -107,9 +127,15 @@ function distrugeAsteroid(index) {
 
     //distrug asteroidul
     asteroizi.splice(index, 1);
+    //pentru nivel nou
+    if(asteroizi.length==0)
+    {
+        nivel++;
+        nivelNou();
+    }
 }
 
-creeazaAsteroizi();
+//creeazaAsteroizi();
 
 // ---------------------------------------------------------------------- ASTEROID
 
@@ -118,6 +144,34 @@ const margini = false; //margini pentru coliziune folosind cerc
 // ---------------------------------------------------------------------- COLIZIUNI
 
 
+
+// ---------------------------------------------------------------------- vieti
+const timpFadeText=1.5; //in secunde
+const dimensiuneText=100;//in pixeli
+const vietiJoc=3;//numarul de vieti la inceput
+
+var nivel;
+var asteroizi;
+var text;
+var textTransparent;
+var vieti;
+var nava;
+jocNou();
+
+function jocNou(){
+    nivel=0;
+    vieti=vietiJoc;
+    nava=navaNoua();
+    nivelNou();
+
+}
+function nivelNou(){
+    text="Nivel "+(nivel+1);
+    textTransparent=1.0;//e opac
+    creeazaAsteroizi();
+}
+
+// ---------------------------------------------------------------------- vieti
 // ---------------------------------------------------------------------- NAVA
 
 function navaNoua() {
@@ -128,6 +182,7 @@ function navaNoua() {
         r: dimensiuneNava / 2,
         a: 90 / 180 * Math.PI, //conversie in radius; angle - directia navei
         rotire: 0,
+        finalJoc:false,
         timpExplozie: 0,
         timpLicarit: Math.ceil(durataLicaritNava * FPS),
         nrLicarit: Math.ceil(imunitateNava / durataLicaritNava),
@@ -145,6 +200,9 @@ function navaNoua() {
     }
 }
 const keyDown = (eveniment) => {
+    if(nava.finalJoc){
+        return;
+    }
     switch (eveniment.keyCode) {
         //pentru rotit la stanga folosind z si Z
         case 122:
@@ -185,6 +243,9 @@ const keyDown = (eveniment) => {
     }
 }
 const keyUp = (eveniment) => {
+    if(nava.finalJoc){
+        return;
+    }
     switch (eveniment.keyCode) {
         //stop rotit la stanga
         case 122:
@@ -246,6 +307,8 @@ document.addEventListener("keyup", keyUp);
 setInterval(update, 1000 / FPS);
 
 
+
+
 function explodeazaNava() {
     // ctx.fillStyle="#B20000";
     // ctx.strokeStyle="#B20000";
@@ -255,7 +318,11 @@ function explodeazaNava() {
     // ctx.stroke();
     nava.timpExplozie = Math.ceil(durataExplozieNava * FPS);
 }
-
+function sfarsitJoc(){
+    nava.finalJoc=true;
+    text="Sfarsit joc!";
+    textTransparent=1.0;
+}
 
 function update() {
     // ---------------------------------------------------------------------- EXPLOZIE
@@ -269,21 +336,22 @@ function update() {
 
     // ---------------------------------------------------------------------- NAVA
     if (!explozieNava) {
-        if (licarit) {
-            //desenez nava in forma de triunghi
-            ctx.strokeStyle = "yellow";
-            ctx.lineWidth = dimensiuneNava / 20;
+        if (licarit && !nava.finalJoc) {
+            deseneazaNava(nava.x, nava.y, nava.a);
+            // //desenez nava in forma de triunghi
+            // ctx.strokeStyle = "yellow";
+            // ctx.lineWidth = dimensiuneNava / 20;
 
-            //incep sa desenez triunghiul
-            ctx.beginPath();
-            ctx.moveTo(nava.x + 4 / 3 * nava.r * Math.cos(nava.a), nava.y - 4 / 3 * nava.r * Math.sin(nava.a));
-            //nava.x reprezinta centrul navei la care adaugam raza * cosinus care reprezinta orizontalul unghiului navei
-            ctx.lineTo(
-                nava.x - nava.r * (2 / 3 * Math.cos(nava.a) - Math.sin(nava.a)),
-                nava.y + nava.r * (2 / 3 * Math.sin(nava.a) + Math.cos(nava.a))); //partea din spate din dreapta
-            ctx.lineTo(nava.x - nava.r * (2 / 3 * Math.cos(nava.a) + Math.sin(nava.a)), nava.y + nava.r * (2 / 3 * Math.sin(nava.a) - Math.cos(nava.a))); //partea din spate din stanga
-            ctx.closePath();
-            ctx.stroke();
+            // //incep sa desenez triunghiul
+            // ctx.beginPath();
+            // ctx.moveTo(nava.x + 4 / 3 * nava.r * Math.cos(nava.a), nava.y - 4 / 3 * nava.r * Math.sin(nava.a));
+            // //nava.x reprezinta centrul navei la care adaugam raza * cosinus care reprezinta orizontalul unghiului navei
+            // ctx.lineTo(
+            //     nava.x - nava.r * (2 / 3 * Math.cos(nava.a) - Math.sin(nava.a)),
+            //     nava.y + nava.r * (2 / 3 * Math.sin(nava.a) + Math.cos(nava.a))); //partea din spate din dreapta
+            // ctx.lineTo(nava.x - nava.r * (2 / 3 * Math.cos(nava.a) + Math.sin(nava.a)), nava.y + nava.r * (2 / 3 * Math.sin(nava.a) - Math.cos(nava.a))); //partea din spate din stanga
+            // ctx.closePath();
+            // ctx.stroke();
 
             ctx.fillStyle = "yellow";
             ctx.fillRect(nava.x - 1, nava.y - 1, 2, 2); //cercul galben din interiorul navei
@@ -387,7 +455,7 @@ function update() {
     // ---------------------------------------------------------------------- NAVA - RACHETE
     // ---------------------------------------------------------------------- NAVA 
     //mut nava
-    if (nava.inainteaza) {
+    if (nava.inainteaza && !nava.finalJoc) {
         nava.inaintare.x = nava.inaintare.x + 0.8 * acceleratieNava * Math.cos(nava.a) / FPS;
         nava.inaintare.y = nava.inaintare.y - 0.8 * acceleratieNava * Math.sin(nava.a) / FPS;
 
@@ -483,6 +551,20 @@ function update() {
 
     }
     // ---------------------------------------------------------------------- NAVA - RACHETE
+     // ---------------------------------------------------------------------- VIETI
+        //desenez vietile
+        var culoareVieti;
+        for(var i=0; i<vieti;i++){
+            culoareVieti=explozieNava&&i==vieti-1?"red":"yellow"
+            if(explozieNava && i==vieti-1)         
+                culoareVieti="red";
+            else
+                culoareVieti="yellow";
+              // console.log(i)
+            deseneazaNava(dimensiuneNava+i*dimensiuneNava*1.2,canvas.height-dimensiuneNava,0.5*Math.PI, culoareVieti);
+        }
+
+        // ---------------------------------------------------------------------- VIETI
     // ---------------------------------------------------------------------- NAVA
     if (!explozieNava) {
         //mut nava 
@@ -493,9 +575,14 @@ function update() {
     }
     else {
         nava.timpExplozie--;
-        if (nava.timpExplozie == 0) {
-            nava = navaNoua();
+    if (nava.timpExplozie == 0) {
+        vieti--;
+        if(vieti==0){
+            sfarsitJoc();
         }
+        else
+            nava = navaNoua();
+     }
     }
 
     //pentru a nu iesi din ecran:
@@ -567,7 +654,7 @@ function update() {
                             ctx.fill();
                         }
         ctx.textAlign='center';
-        ctx.fillStyle='black';
+        ctx.fillStyle='white';
         ctx.font='25px Courier New';
         ctx.beginPath();
         if(asteroizi[i].r>70){
@@ -590,7 +677,23 @@ function update() {
                         }
                 
                
+        // ---------------------------------------------------------------------- TEXT
+        if(textTransparent>=0){
+            ctx.textAlign="center";
+            ctx.textBaseline="middle";
+            ctx.fillStyle="rgba(255, 255, 255, "+textTransparent+")";
+            ctx.font="small-caps"+dimensiuneText+"px dejavu sans mono";
+            ctx.fillText(text,canvas.width/2,canvas.height/3);
+            textTransparent=textTransparent-(1.0/timpFadeText/FPS);
+        }
+        else
+            if(nava.finalJoc){
+                jocNou();
+            }
 
+
+        // ---------------------------------------------------------------------- TEXT
+       
         // ---------------------------------------------------------------------- COLIZIUNI
         if (margini) {
             ctx.strokeStyle = "pink";
@@ -633,7 +736,7 @@ function update() {
     // ---------------------------------------------------------------------- COLIZIUNI
     if (!explozieNava) {
         //verific daca exista coliziuni cu asteroizii
-        if (nava.nrLicarit == 0) {
+        if (nava.nrLicarit == 0 && !nava.finalJoc) {
             for (var i = 0; i < asteroizi.length; i++) {
                 if (distantaDintrePuncte(nava.x, nava.y, asteroizi[i].x, asteroizi[i].y) < nava.r + asteroizi[i].r){
                     explodeazaNava();
