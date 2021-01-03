@@ -36,16 +36,26 @@ const distantaRachete = 0.4;//1=canvas.width;
 
 
 // ---------------------------------------------------------------------- NAVA
+
+// ---------------------------------------------------------------------- SCOR
+const cheieScor1="scormaxim1";//cheia de salvare pentru a salva cel mai mare scor
+const cheieScor2="scormaxim2";
+const cheieScor3="scormaxim3";
+const cheieScor4="scormaxim4";
+const cheieScor5="scormaxim5";
+
+// ---------------------------------------------------------------------- SCOR
+
 // ---------------------------------------------------------------------- ASTEROID
 //var asteroizi = [];
 var nrAsteroizi = 4; //nr de asteroizi initial
 var vitezaAsteriozi = 50;//viteza maxima initiala in pixeli pe secunde
 var dimensiuneAsteroizi = 120;//dimensiunea initiala a asteroizilor
 var varfuriAsteroizi = 12;//nr mediu de varfuri ale asteroizilor
-var puncteAsteroid1=20;
-var puncteAsteroid2=15;
-var puncteAsteroid3=10;
-var puncteAsteroid4=5;
+var puncteAsteroid1=5;
+var puncteAsteroid2=10;
+var puncteAsteroid3=15;
+var puncteAsteroid4=20;
 
 
 
@@ -112,28 +122,37 @@ function distrugeAsteroid(index) {
     //impartim asteroidul in 2
     if (r > 70) {
         asteroizi.push(asteroidNou(x, y, 61));
+        scor=scor+puncteAsteroid4;
         //asteroizi.push(asteroidNou(x, y, Math.ceil(dimensiuneAsteroizi / 4)));
     }
     else
         if (r >58 && r<=70) {
             asteroizi.push(asteroidNou(x, y, 50));
+            scor=scor+puncteAsteroid3;
             //asteroizi.push(asteroidNou(x, y, Math.ceil(dimensiuneAsteroizi / 8)));
         }
         else
-            if(r>40 && r<=58)
+            if(r>40 && r<=58){
                 asteroizi.push(asteroidNou(x, y, 35));
+                scor=scor+puncteAsteroid2;
+            }
+                else
+                    scor=scor+puncteAsteroid1;
                 
-
 
     //distrug asteroidul
     asteroizi.splice(index, 1);
+
+  
     //pentru nivel nou
     if(asteroizi.length==0)
     {
         nivel++;
         nivelNou();
     }
+     
 }
+
 
 //creeazaAsteroizi();
 
@@ -142,7 +161,6 @@ function distrugeAsteroid(index) {
 // ---------------------------------------------------------------------- COLIZIUNI
 const margini = false; //margini pentru coliziune folosind cerc
 // ---------------------------------------------------------------------- COLIZIUNI
-
 
 
 // ---------------------------------------------------------------------- vieti
@@ -156,20 +174,119 @@ var text;
 var textTransparent;
 var vieti;
 var nava;
+var scor;
+var celMaiMareScor1;
+var celMaiMareScor2;
+var celMaiMareScor3;
+var celMaiMareScor4;
+var celMaiMareScor5;
+
 jocNou();
 
+
+function adaugaViata(){
+    if(scor>100)
+    vieti++;
+    }
 function jocNou(){
     nivel=0;
+    scor=0;
+    
     vieti=vietiJoc;
     nava=navaNoua();
-    nivelNou();
+    //pentru primele 5 cele mai mari scoruri
+    var scorText1=localStorage.getItem(cheieScor1);
+    var scorText2=localStorage.getItem(cheieScor2);
+    var scorText3=localStorage.getItem(cheieScor3);
+    var scorText4=localStorage.getItem(cheieScor4);
+    var scorText5=localStorage.getItem(cheieScor5);
+    if(scorText1==null)
+    {
+        celMaiMareScor1=0;
+    }
+    else
+    celMaiMareScor1=parseInt(scorText1);
 
+    if(scorText2==null)
+    {
+        celMaiMareScor2=0;
+    }
+    else
+    celMaiMareScor2=parseInt(scorText2);
+
+    if(scorText3==null)
+    {
+        celMaiMareScor3=0;
+    }
+    else
+    celMaiMareScor3=parseInt(scorText3);
+
+    if(scorText4==null)
+    {
+        celMaiMareScor4=0;
+    }
+    else
+    celMaiMareScor4=parseInt(scorText4);
+
+    if(scorText5==null)
+    {
+        celMaiMareScor5=0;
+    }
+    else
+    celMaiMareScor5=parseInt(scorText5);
+    adaugaViata();
+    nivelNou();
 }
+
 function nivelNou(){
     text="Nivel "+(nivel+1);
     textTransparent=1.0;//e opac
     creeazaAsteroizi();
 }
+
+function verificaScor(){
+    //verifica daca este cel mai mare scor
+    if(scor>celMaiMareScor1)
+    {
+      celMaiMareScor2=celMaiMareScor1;
+      celMaiMareScor3=celMaiMareScor2;
+      celMaiMareScor4=celMaiMareScor3;
+      celMaiMareScor5=celMaiMareScor4;
+      celMaiMareScor1=scor;
+      localStorage.setItem(cheieScor1,celMaiMareScor1);
+    }
+        else
+        if(scor>celMaiMareScor2 && scor<celMaiMareScor1)
+        {
+          
+          celMaiMareScor3=celMaiMareScor2;
+          celMaiMareScor4=celMaiMareScor3;
+          celMaiMareScor5=celMaiMareScor4;
+          celMaiMareScor2=scor;
+          localStorage.setItem(cheieScor2,celMaiMareScor2);
+        }
+            else
+            if(scor>celMaiMareScor3 && scor<celMaiMareScor1 && scor<celMaiMareScor2)
+            {
+                celMaiMareScor4=celMaiMareScor3;
+                celMaiMareScor5=celMaiMareScor4;
+                celMaiMareScor3=scor;
+                localStorage.setItem(cheieScor3,celMaiMareScor3);
+            }
+                else
+                if(scor>celMaiMareScor4 && scor<celMaiMareScor1 && scor<celMaiMareScor2 && scor<celMaiMareScor3)
+                {
+                    celMaiMareScor5=celMaiMareScor4;
+                    celMaiMareScor4=scor;
+                    localStorage.setItem(cheieScor4,celMaiMareScor4);
+                }
+                    else
+                    if(scor>celMaiMareScor5&& scor<celMaiMareScor1 && scor<celMaiMareScor2 && scor<celMaiMareScor3 && scor<celMaiMareScor4)
+                    {
+                        celMaiMareScor5=scor;
+                        localStorage.setItem(cheieScor5,celMaiMareScor5);
+                    }
+   }
 
 // ---------------------------------------------------------------------- vieti
 // ---------------------------------------------------------------------- NAVA
@@ -322,6 +439,7 @@ function sfarsitJoc(){
     nava.finalJoc=true;
     text="Sfarsit joc!";
     textTransparent=1.0;
+    verificaScor();
 }
 
 function update() {
@@ -333,6 +451,8 @@ function update() {
     //desenez fundalul(spatiul)
     ctx.fillStyle = "#071425";
     ctx.fillRect(0, 0, canvas.width, canvas.height); //700,700
+
+     
 
     // ---------------------------------------------------------------------- NAVA
     if (!explozieNava) {
@@ -537,17 +657,17 @@ function update() {
         nava.rachete[i].distRachete = nava.rachete[i].distRachete + Math.sqrt(Math.pow(nava.rachete[i].xv, 2) + Math.pow(nava.rachete[i].yv, 2));
 
         //penru marginea canvasului
-        if (nava.rachete[i].x < 0)
-            nava.rachete[i].x = canvas.width;
-        else
-            if (nava.rachete[i].x > canvas.width)
-                nava.rachete[i].x = 0;
+        // if (nava.rachete[i].x < 0)
+        //     nava.rachete[i].x = canvas.width;
+        // else
+        //     if (nava.rachete[i].x > canvas.width)
+        //         nava.rachete[i].x = 0;
 
-        if (nava.rachete[i].y < 0)
-            nava.rachete[i].y = canvas.height;
-        else
-            if (nava.rachete[i].y > canvas.height)
-                nava.rachete[i].y = 0;
+        // if (nava.rachete[i].y < 0)
+        //     nava.rachete[i].y = canvas.height;
+        // else
+        //     if (nava.rachete[i].y > canvas.height)
+        //         nava.rachete[i].y = 0;
 
     }
     // ---------------------------------------------------------------------- NAVA - RACHETE
@@ -564,7 +684,9 @@ function update() {
             deseneazaNava(dimensiuneNava+i*dimensiuneNava*1.2,canvas.height-dimensiuneNava,0.5*Math.PI, culoareVieti);
         }
 
-        // ---------------------------------------------------------------------- VIETI
+    // ---------------------------------------------------------------------- VIETI
+       
+       
     // ---------------------------------------------------------------------- NAVA
     if (!explozieNava) {
         //mut nava 
@@ -579,10 +701,12 @@ function update() {
         vieti--;
         if(vieti==0){
             sfarsitJoc();
+        
         }
         else
             nava = navaNoua();
      }
+     
     }
 
     //pentru a nu iesi din ecran:
@@ -676,7 +800,7 @@ function update() {
                             ctx.fillText("1",x,y);
                         }
                 
-               
+        
         // ---------------------------------------------------------------------- TEXT
         if(textTransparent>=0){
             ctx.textAlign="center";
@@ -693,7 +817,48 @@ function update() {
 
 
         // ---------------------------------------------------------------------- TEXT
-       
+        
+        // ---------------------------------------------------------------------- SCOR
+        //desenez scorul
+        ctx.textAlign="right";
+        ctx.textBaseline="middle";
+        ctx.fillStyle="white";
+        ctx.font=dimensiuneText/2+"px dejavu sans mono";
+        ctx.fillText(scor,canvas.width-dimensiuneNava/2,dimensiuneNava);
+
+        //desenez cel mai mare scor 1
+        ctx.textAlign="center";
+        ctx.textBaseline="middle";
+        ctx.fillStyle="white";
+        ctx.font=(dimensiuneText*0.4)+"px dejavu sans mono";
+        ctx.fillText(celMaiMareScor1,canvas.width-dimensiuneNava-10,canvas.height-dimensiuneNava*6.1);
+        //desenez cel mai mare scor 2
+        ctx.textAlign="center";
+        ctx.textBaseline="middle";
+        ctx.fillStyle="white";
+        ctx.font=(dimensiuneText*0.4)+"px dejavu sans mono";
+        ctx.fillText(celMaiMareScor2,canvas.width-dimensiuneNava-10,canvas.height-dimensiuneNava*4.8);
+        //desenez cel mai mare scor 3
+        ctx.textAlign="center";
+        ctx.textBaseline="middle";
+        ctx.fillStyle="white";
+        ctx.font=(dimensiuneText*0.4)+"px dejavu sans mono";
+        ctx.fillText(celMaiMareScor3,canvas.width-dimensiuneNava-10,canvas.height-dimensiuneNava*3.6);
+        //desenez cel mai mare scor 4
+        ctx.textAlign="center";
+        ctx.textBaseline="middle";
+        ctx.fillStyle="white";
+        ctx.font=(dimensiuneText*0.4)+"px dejavu sans mono";
+        ctx.fillText(celMaiMareScor4,canvas.width-dimensiuneNava-10,canvas.height-dimensiuneNava*2.4);
+        //desenez cel mai mare scor 5
+        ctx.textAlign="center";
+        ctx.textBaseline="middle";
+        ctx.fillStyle="white";
+        ctx.font=(dimensiuneText*0.4)+"px dejavu sans mono";
+        ctx.fillText(celMaiMareScor5,canvas.width-dimensiuneNava-10,canvas.height-dimensiuneNava*1.2);
+
+        // ---------------------------------------------------------------------- SCOR
+
         // ---------------------------------------------------------------------- COLIZIUNI
         if (margini) {
             ctx.strokeStyle = "pink";
@@ -701,10 +866,9 @@ function update() {
             ctx.arc(x, y, r, 0, 2 * Math.PI, false);
             ctx.stroke();
         }
-
         // ---------------------------------------------------------------------- ACOLIZIUNI
 
-
+        
     }
     //mut asteroidul
     for (var i = 0; i < asteroizi.length; i++) {
