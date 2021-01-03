@@ -756,25 +756,25 @@ function update() {
         // ctx.stroke();
         //ctx.restore();
         if(asteroizi[i].r>70){
-            ctx.fillStyle="#CAC9C5";
+            ctx.fillStyle="#502688";
             ctx.fill();
             }
             else
                 if(asteroizi[i].r>58)
                 {
-                    ctx.fillStyle="#ABA8A3";
+                    ctx.fillStyle="#2E36AA";
                     ctx.fill();
                 }
                 else
                     if(asteroizi[i].r>40)
                     {
-                        ctx.fillStyle="#F8F0ED";
+                        ctx.fillStyle="#401E42";
                         ctx.fill();
                     }
                     else    
                         if(asteroizi[i].r>0)
                         {
-                            ctx.fillStyle="#797B7A";
+                            ctx.fillStyle="#281759";
                             ctx.fill();
                         }
         ctx.textAlign='center';
