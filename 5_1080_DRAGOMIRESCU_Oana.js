@@ -779,7 +779,7 @@ function update() {
                         }
         ctx.textAlign='center';
         ctx.fillStyle='white';
-        ctx.font='25px Courier New';
+        ctx.font='25px bahnschrift semiLight';
         ctx.beginPath();
         if(asteroizi[i].r>70){
             ctx.fillText("4",x,y);        
@@ -806,7 +806,7 @@ function update() {
             ctx.textAlign="center";
             ctx.textBaseline="middle";
             ctx.fillStyle="rgba(255, 255, 255, "+textTransparent+")";
-            ctx.font="small-caps"+dimensiuneText+"px dejavu sans mono";
+            ctx.font="small-caps"+dimensiuneText+"px bahnschrift semiLight";
             ctx.fillText(text,canvas.width/2,canvas.height/3);
             textTransparent=textTransparent-(1.0/timpFadeText/FPS);
         }
@@ -823,38 +823,38 @@ function update() {
         ctx.textAlign="right";
         ctx.textBaseline="middle";
         ctx.fillStyle="white";
-        ctx.font=dimensiuneText/2+"px dejavu sans mono";
+        ctx.font=dimensiuneText/2+"px bahnschrift semiLight";
         ctx.fillText(scor,canvas.width-dimensiuneNava/2,dimensiuneNava);
 
         //desenez cel mai mare scor 1
         ctx.textAlign="center";
         ctx.textBaseline="middle";
         ctx.fillStyle="white";
-        ctx.font=(dimensiuneText*0.4)+"px dejavu sans mono";
+        ctx.font=(dimensiuneText*0.4)+"px bahnschrift semiLight";
         ctx.fillText(celMaiMareScor1,canvas.width-dimensiuneNava-10,canvas.height-dimensiuneNava*6.1);
         //desenez cel mai mare scor 2
         ctx.textAlign="center";
         ctx.textBaseline="middle";
         ctx.fillStyle="white";
-        ctx.font=(dimensiuneText*0.4)+"px dejavu sans mono";
+        ctx.font=(dimensiuneText*0.4)+"px bahnschrift semiLight";
         ctx.fillText(celMaiMareScor2,canvas.width-dimensiuneNava-10,canvas.height-dimensiuneNava*4.8);
         //desenez cel mai mare scor 3
         ctx.textAlign="center";
         ctx.textBaseline="middle";
         ctx.fillStyle="white";
-        ctx.font=(dimensiuneText*0.4)+"px dejavu sans mono";
+        ctx.font=(dimensiuneText*0.4)+"px bahnschrift semiLight";
         ctx.fillText(celMaiMareScor3,canvas.width-dimensiuneNava-10,canvas.height-dimensiuneNava*3.6);
         //desenez cel mai mare scor 4
         ctx.textAlign="center";
         ctx.textBaseline="middle";
         ctx.fillStyle="white";
-        ctx.font=(dimensiuneText*0.4)+"px dejavu sans mono";
+        ctx.font=(dimensiuneText*0.4)+"px bahnschrift semiLight";
         ctx.fillText(celMaiMareScor4,canvas.width-dimensiuneNava-10,canvas.height-dimensiuneNava*2.4);
         //desenez cel mai mare scor 5
         ctx.textAlign="center";
         ctx.textBaseline="middle";
         ctx.fillStyle="white";
-        ctx.font=(dimensiuneText*0.4)+"px dejavu sans mono";
+        ctx.font=(dimensiuneText*0.4)+"px bahnschrift semiLight";
         ctx.fillText(celMaiMareScor5,canvas.width-dimensiuneNava-10,canvas.height-dimensiuneNava*1.2);
 
         // ---------------------------------------------------------------------- SCOR
