@@ -248,30 +248,44 @@ function verificaScor(){
     //verifica daca este cel mai mare scor
     if(scor>celMaiMareScor1)
     {
-      celMaiMareScor2=celMaiMareScor1;
-      celMaiMareScor3=celMaiMareScor2;
-      celMaiMareScor4=celMaiMareScor3;
       celMaiMareScor5=celMaiMareScor4;
+      celMaiMareScor4=celMaiMareScor3;
+      celMaiMareScor3=celMaiMareScor2;
+      celMaiMareScor2=celMaiMareScor1;
+      
+    
+     
       celMaiMareScor1=scor;
       localStorage.setItem(cheieScor1,celMaiMareScor1);
+      localStorage.setItem(cheieScor2,celMaiMareScor2);
+      localStorage.setItem(cheieScor3,celMaiMareScor3);
+      localStorage.setItem(cheieScor4,celMaiMareScor4);
     }
         else
         if(scor>celMaiMareScor2 && scor<celMaiMareScor1)
         {
           
-          celMaiMareScor3=celMaiMareScor2;
-          celMaiMareScor4=celMaiMareScor3;
-          celMaiMareScor5=celMaiMareScor4;
+            celMaiMareScor5=celMaiMareScor4;
+            celMaiMareScor4=celMaiMareScor3;
+            celMaiMareScor3=celMaiMareScor2;
+            
+            
           celMaiMareScor2=scor;
           localStorage.setItem(cheieScor2,celMaiMareScor2);
+          localStorage.setItem(cheieScor3,celMaiMareScor3);
+          localStorage.setItem(cheieScor4,celMaiMareScor4);
         }
             else
             if(scor>celMaiMareScor3 && scor<celMaiMareScor1 && scor<celMaiMareScor2)
             {
-                celMaiMareScor4=celMaiMareScor3;
                 celMaiMareScor5=celMaiMareScor4;
+                celMaiMareScor4=celMaiMareScor3;
+                
+                
                 celMaiMareScor3=scor;
+                
                 localStorage.setItem(cheieScor3,celMaiMareScor3);
+                localStorage.setItem(cheieScor4,celMaiMareScor4);
             }
                 else
                 if(scor>celMaiMareScor4 && scor<celMaiMareScor1 && scor<celMaiMareScor2 && scor<celMaiMareScor3)
@@ -279,6 +293,7 @@ function verificaScor(){
                     celMaiMareScor5=celMaiMareScor4;
                     celMaiMareScor4=scor;
                     localStorage.setItem(cheieScor4,celMaiMareScor4);
+                    localStorage.setItem(cheieScor5,celMaiMareScor5);
                 }
                     else
                     if(scor>celMaiMareScor5&& scor<celMaiMareScor1 && scor<celMaiMareScor2 && scor<celMaiMareScor3 && scor<celMaiMareScor4)
