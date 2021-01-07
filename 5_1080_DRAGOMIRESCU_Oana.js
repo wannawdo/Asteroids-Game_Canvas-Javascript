@@ -180,14 +180,24 @@ var celMaiMareScor2;
 var celMaiMareScor3;
 var celMaiMareScor4;
 var celMaiMareScor5;
+var viataPlus=0;
+var viataNoua=120;
 
 jocNou();
 
 
 function adaugaViata(){
-    if(scor>100)
-    vieti++;
+    if(viataPlus>=viataNoua){
+        console.log(viataNoua);
+        console.log(viataPlus);
+
+        vieti++;
+        viataNoua=viataNoua+120;
     }
+    else{
+        viataPlus=scor;
+    }
+}
 function jocNou(){
     nivel=0;
     scor=0;
@@ -234,7 +244,7 @@ function jocNou(){
     }
     else
     celMaiMareScor5=parseInt(scorText5);
-    adaugaViata();
+
     nivelNou();
 }
 
@@ -449,6 +459,7 @@ function explodeazaNava() {
     // ctx.fill();
     // ctx.stroke();
     nava.timpExplozie = Math.ceil(durataExplozieNava * FPS);
+    nava.poateDeclansaRachete=false;
 }
 function sfarsitJoc(){
     nava.finalJoc=true;
@@ -942,4 +953,6 @@ function update() {
     }
    
     // ---------------------------------------------------------------------- COLIZIUNI
+    adaugaViata();
+
 }
