@@ -43,6 +43,7 @@ const cheieScor2="scormaxim2";
 const cheieScor3="scormaxim3";
 const cheieScor4="scormaxim4";
 const cheieScor5="scormaxim5";
+const cheieNumeJucator="Nume Jucator";
 
 // ---------------------------------------------------------------------- SCOR
 
@@ -53,9 +54,9 @@ var vitezaAsteriozi = 50;//viteza maxima initiala in pixeli pe secunde
 var dimensiuneAsteroizi = 120;//dimensiunea initiala a asteroizilor
 var varfuriAsteroizi = 12;//nr mediu de varfuri ale asteroizilor
 var puncteAsteroid1=5;
-var puncteAsteroid2=10;
-var puncteAsteroid3=15;
-var puncteAsteroid4=20;
+var puncteAsteroid2=5;
+var puncteAsteroid3=5;
+var puncteAsteroid4=5;
 
 
 
@@ -85,7 +86,7 @@ function creeazaAsteroizi() {
             x = Math.floor(Math.random() * canvas.width); //round down
             y = Math.floor(Math.random() * canvas.height);
             r = Math.floor(Math.random()*60)+40;
-            console.log(r)
+            //console.log(r)
         }
         while (distantaDintrePuncte(nava.x, nava.y, x, y) < dimensiuneAsteroizi * 2 + nava.r);
 
@@ -114,12 +115,12 @@ function deseneazaNava(x,y,a,culoare="yellow"){
 }
 
 function distrugeAsteroid(index) {
-    console.log(index)
+    //console.log(index)
     var x = asteroizi[index].x;
     var y = asteroizi[index].y;
     var r = asteroizi[index].r;
 
-    //impartim asteroidul in 2
+    //impartim asteroidul intr-un asteroid de dimensiune 61
     if (r > 70) {
         asteroizi.push(asteroidNou(x, y, 61));
         scor=scor+puncteAsteroid4;
@@ -180,19 +181,20 @@ var celMaiMareScor2;
 var celMaiMareScor3;
 var celMaiMareScor4;
 var celMaiMareScor5;
-var viataPlus=0;
-var viataNoua=120;
+var viataPlus=0; //pentru a adauga o noua viata la fiecare 360 de puncte
+var viataNoua=100;
+var jucator;
 
 jocNou();
 
 
 function adaugaViata(){
-    if(viataPlus>=viataNoua){
-        console.log(viataNoua);
-        console.log(viataPlus);
+    if(viataPlus==viataNoua){
+       // console.log(viataNoua);
+       // console.log(viataPlus);
 
         vieti++;
-        viataNoua=viataNoua+120;
+        viataNoua=viataNoua+100;
     }
     else{
         viataPlus=scor;
@@ -204,7 +206,7 @@ function jocNou(){
     
     vieti=vietiJoc;
     nava=navaNoua();
-    //pentru primele 5 cele mai mari scoruri
+    //pentru primele 5 cele mai mari scoruri salvate local
     var scorText1=localStorage.getItem(cheieScor1);
     var scorText2=localStorage.getItem(cheieScor2);
     var scorText3=localStorage.getItem(cheieScor3);
@@ -248,6 +250,7 @@ function jocNou(){
     nivelNou();
 }
 
+
 function nivelNou(){
     text="Nivel "+(nivel+1);
     textTransparent=1.0;//e opac
@@ -264,7 +267,7 @@ function verificaScor(){
       celMaiMareScor2=celMaiMareScor1;
       
     
-     
+     //am schimb clasamentul scorurilor, pun pe prima pozitie noul scor cel mai mare si apoi le salvez pe toate local
       celMaiMareScor1=scor;
       localStorage.setItem(cheieScor1,celMaiMareScor1);
       localStorage.setItem(cheieScor2,celMaiMareScor2);
@@ -315,7 +318,15 @@ function verificaScor(){
                         localStorage.setItem(cheieScor5,celMaiMareScor5);
                     }
    }
+   function iaNumeJucator(){
+       //pentru a introduce de la tastatura
+    jucator = prompt("Introdu numele:", "");
 
+    if (jucator != null) {
+     // console.log(jucator);
+      localStorage.setItem(cheieNumeJucator,jucator);
+    }
+}
 // ---------------------------------------------------------------------- vieti
 // ---------------------------------------------------------------------- NAVA
 
@@ -469,7 +480,10 @@ function sfarsitJoc(){
     text="Sfarsit joc!";
     textTransparent=1.0;
     verificaScor();
+    iaNumeJucator();
+    console.log("Nume jucator anterior:"+jucator+" Scor: "+scor);
 }
+
 
 function update() {
     // ---------------------------------------------------------------------- EXPLOZIE
@@ -889,6 +903,7 @@ function update() {
         // ---------------------------------------------------------------------- SCOR
 
         // ---------------------------------------------------------------------- COLIZIUNI
+        //cerc pentru coliziuni
         if (margini) {
             ctx.strokeStyle = "pink";
             ctx.beginPath();
@@ -943,6 +958,7 @@ function update() {
         for(var j=i+1; j<asteroizi.length;j++)
         {
             if(distantaDintrePuncte(asteroizi[i].x, asteroizi[i].y, asteroizi[j].x, asteroizi[j].y)<asteroizi[i].r+asteroizi[j].r){
+                //le schimb directia pe ox si pe oy
                 asteroizi[i].xv=-1*asteroizi[i].xv;
                 asteroizi[i].yv=-1*asteroizi[i].yv;
                 asteroizi[j].xv=-1*asteroizi[j].xv;
